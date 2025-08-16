@@ -159,6 +159,6 @@ Authorization: Bearer your-secure-token
 ## 🛠️ Author & Credits
 
 Built by **Frank** with support from Microsoft Copilot 🤝  
-Part of the Microsoft Full-Stack Development course on Coursera.```
+Part of the Microsoft Full-Stack Development course on Coursera.
 
 ---
