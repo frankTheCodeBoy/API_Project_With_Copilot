@@ -1,164 +1,93 @@
-# 📘 `README.md` — User Management API
+# 🧑‍💻 User Management API — ASP.NET Core Project with Copilot
 
-```markdown
-# 🧑‍💻 User Management API
+A secure, full-stack-ready ASP.NET Core Web API for managing users. Built with custom middleware for error handling, authentication, and logging. Designed for hands-on learning and production-grade practices.
 
-A secure, full-stack-ready ASP.NET Core Web API for managing users, built with custom middleware for error handling, authentication, and logging. Designed for hands-on learning and production-grade practices.
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-9.0-blue?logo=dotnet)
+![Authentication](https://img.shields.io/badge/Auth-Bearer%20Token-green?logo=security)
+![Status](https://img.shields.io/badge/Status-Active-brightgreen)
+![Last Commit](https://img.shields.io/github/last-commit/frankTheCodeBoy/API_Project_With_Copilot)
 
 ---
 
 ## 🚀 Features
 
-- ✅ Custom middleware pipeline:
-  - `ErrorHandlingMiddleware` – catches and formats exceptions
-  - `AuthenticationMiddleware` – validates bearer tokens with selective bypass
-  - `LoggingMiddleware` – logs request/response data
-- 🔐 Token-based authentication
-- 🧪 Swagger UI for testing endpoints
-- 📦 Modular structure for easy extension
+- ✅ **Custom Middleware Pipeline**
+  - `ErrorHandlingMiddleware` — catches and formats exceptions
+  - `AuthenticationMiddleware` — validates bearer tokens with selective bypass
+  - `LoggingMiddleware` — logs request/response data
+
+- 🔐 **Token-Based Authentication**
+- 🧪 **Swagger UI** for testing endpoints
+- 📦 **Modular Structure** for easy extension and maintenance
 
 ---
 
-## 🧱 Middleware Overview
+## 🧱 Project Structure
 
-### 🔐 `AuthenticationMiddleware.cs`
-
-```csharp
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-
-namespace UserManagementAPI.Middleware
-{
-    public class AuthenticationMiddleware
-    {
-        private readonly RequestDelegate _next;
-
-        public AuthenticationMiddleware(RequestDelegate next)
-        {
-            _next = next;
-        }
-
-        public async Task InvokeAsync(HttpContext context)
-        {
-            var path = context.Request.Path.Value?.ToLower();
-
-            var exemptPaths = new[]
-            {
-                "/", "/swagger", "/swagger/index.html", "/swagger/v1/swagger.json", "/health"
-            };
-
-            if (exemptPaths.Any(p => path.StartsWith(p)))
-            {
-                await _next(context);
-                return;
-            }
-
-            var token = context.Request.Headers["Authorization"].FirstOrDefault()?
-                .Split(" ").Last() ?? string.Empty;
-
-            if (string.IsNullOrEmpty(token) || token != "your-secure-token")
-            {
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                await context.Response.WriteAsync("Unauthorized");
-                return;
-            }
-
-            await _next(context);
-        }
-    }
-}
-```
-
----
-
-## ⚙️ `Program.cs`
-
-```csharp
-using UserManagementAPI.Middleware;
-
-var builder = WebApplication.CreateBuilder(args);
-
-// 🔧 Register services
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-// 🚀 Configure middleware
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-
-// 🧱 Custom Middleware Pipeline (order matters!)
-app.UseMiddleware<ErrorHandlingMiddleware>();       // 1️⃣ Catch exceptions
-app.UseMiddleware<AuthenticationMiddleware>();      // 2️⃣ Validate tokens
-app.UseMiddleware<LoggingMiddleware>();             // 3️⃣ Log requests/responses
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.MapGet("/", context =>
-{
-    context.Response.Redirect("/swagger");
-    return Task.CompletedTask;
-});
-
-app.Run();
-```
-
----
-
-## 🧪 Testing the API
-
-### 🔹 Using Postman or curl
-
-Send a request with a valid token:
-
-```http
-GET https://localhost:5182/api/users
-Authorization: Bearer your-secure-token
-```
-
-### 🔸 Unauthorized Access
-
-- No token → `401 Unauthorized`
-- Wrong token → `401 Unauthorized`
-- Swagger and root (`/`) → ✅ Allowed without token
-
----
-
-## 📁 Folder Structure
-
-```UserManagementAPI/
-├── Controllers/
-├── Middleware/
-│   ├── AuthenticationMiddleware.cs
-│   ├── ErrorHandlingMiddleware.cs
-│   └── LoggingMiddleware.cs
-├── Program.cs
+```bash
+API_Project_With_Copilot/
+├── Controllers/              # API endpoints
+├── Middleware/               # Custom middleware components
+├── Models/                   # Data models
+├── Properties/
+├── Program.cs                # Entry point
+├── appsettings.json          # Configuration
+├── UserManagementAPI.sln     # Solution file
+├── UserManagementAPI.csproj  # Project file
 └── README.md
 ```
 
 ---
 
-## 📚 Notes
+## 🛠️ Getting Started
 
-- Replace `"your-secure-token"` with a secure value or integrate JWT for production.
-- Customize `exemptPaths` to allow public endpoints.
-- Use this project as a foundation for full-stack integration with Blazor or other frontends.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/frankTheCodeBoy/API_Project_With_Copilot.git
+   cd API_Project_With_Copilot
+   ```
+
+2. **Open in Visual Studio or VS Code**
+
+3. **Restore dependencies**
+   ```bash
+   dotnet restore
+   ```
+
+4. **Run the project**
+   ```bash
+   dotnet run
+   ```
+
+5. **Access Swagger UI**
+   ```
+   http://localhost:<port>/swagger
+   ```
 
 ---
 
-## 🛠️ Author & Credits
+## 🔐 Authentication Notes
 
-Built by **Frank** with support from Microsoft Copilot 🤝  
-Part of the Microsoft Full-Stack Development course on Coursera.
+- The API uses a simple bearer token validation.
+- Paths like `/swagger`, `/health`, and `/` are exempt from token checks.
+- Update the token logic in `AuthenticationMiddleware.cs` to match your production needs.
 
 ---
+
+## 📜 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙋 Author
+
+**Frank (Francis Olum)** — [GitHub Profile](https://github.com/frankTheCodeBoy)  
+Full-Stack Developer | API Architect | Middleware Enthusiast
+
+📧 Email: Olumfrank48@gmail.com  
+📱 Tel: +254 734 633 607
+
+---
+
